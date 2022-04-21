@@ -5,17 +5,43 @@ import {Button, View, Text, Pressable, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StyleSheet} from 'react-native';
+// import BackgroundFetch from 'react-native-background-fetch';
+import PushNotification from 'react-native-push-notification';
 
 import mqtt from 'mqtt/dist/mqtt';
 
+const createChannels = () => {
+  PushNotification.createChannel({
+    channelId: 'test-channel',
+    channelName: 'Test Channel',
+  });
+};
+
+// const handleNotification = () => {
+//   PushNotification.localNotification({
+//     channelId: 'test-channel',
+//     title: 'Notification Title You Clicked Button',
+//     message: 'Notification Message',
+//   });
+// };
+// const handlemqttnoti = () => {
+//   PushNotification.localNotification({
+//     channelId: 'test-channel',
+//     title: 'Pig Alert Detected',
+//     message: 'Pig Alert! Please Check Your Farm',
+//   });
+// };
 function HomeScreen({route, navigation}) {
   const client = mqtt.connect('wss://broker.emqx.io/mqtt', {port: 8084});
 
   const [isshow, setisshow] = useState(false);
+  const [isalert, setisalert] = useState(false);
   const [data, setdata] = useState(false);
 
   useEffect(() => {
     connectmqtt();
+    createChannels();
+    mqttnoti();
   }, []);
 
   const connectmqtt = () => {
@@ -27,13 +53,41 @@ function HomeScreen({route, navigation}) {
       // let obj = JSON.parse(message.toString());
       let obj = message.toString();
       setdata(obj);
+
       setisshow(true);
+
+      // setisalert(true);
       // console.log(obj);
     });
     return () => {
       client.end();
     };
   };
+  const mqttnoti = () => {
+    client.on('connect', () => {
+      client.subscribe('Snapler/PigAlert');
+    });
+    client.on('message', (topic, message) => {
+      // let obj1 = message.toString();
+      if (topic === 'Snapler/PigAlert') {
+        setisalert(true);
+        PushNotification.localNotificationSchedule({
+          channelId: 'test-channel',
+          title: 'Pig Alert Detected',
+          message: 'Pig Alert! Please Check Your Farm',
+          date: new Date(Date.now() + 5),
+        });
+        setisshow(false);
+      }
+      // console.log(obj1);
+      return () => {
+        client.end();
+      };
+    });
+  };
+  // PushNotification.localNotificationSchedule({
+  //   message: 'My Notification Message',
+  // });
   const handleWaterON = () => {
     console.log('published');
     client.publish('ASoreterZ', '2');
@@ -58,19 +112,21 @@ function HomeScreen({route, navigation}) {
     console.log('published');
     client.publish('ASoreterZ', '5');
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        {/* {isshow === true ? (
+        {/* {isalert === true ? (
           <Text style={styles.contextText}>{data}</Text>
         ) : (
           <Text style={styles.contextText}>No Data</Text>
         )} */}
         {isshow === true ? (
-          <Text style={styles.contextText}>Current Temp : {data} C</Text>
+          <Text style={styles.contextText}>Current Temp : {data} C </Text>
         ) : (
-          <Text style={styles.contextText}>Current Temp : Nan</Text>
+          <Text style={styles.contextText}>Current Temp : {} C</Text>
         )}
+
         <View style={styles.CommandButtonContainer}>
           <Pressable
             style={styles.CommandButton}
@@ -86,6 +142,11 @@ function HomeScreen({route, navigation}) {
             }}>
             <Text style={styles.CommandButtonText}>Turn Water Pump Off</Text>
           </Pressable>
+          {/* <Pressable
+            style={styles.CommandButton}
+            onPress={() => {
+              handleNotification();
+            }}></Pressable> */}
         </View>
         <Text style={styles.contextText}>Feeding Line Start At : 7:55 AM</Text>
         <View style={styles.CommandButtonContainer}>
