@@ -1,11 +1,210 @@
 // In App.js in a new project
 
-import * as React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, View, Text, Pressable, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StyleSheet} from 'react-native';
 
+import mqtt from 'mqtt/dist/mqtt';
+
+function HomeScreen({route, navigation}) {
+  const client = mqtt.connect('wss://broker.emqx.io/mqtt', {port: 8084});
+
+  const [isshow, setisshow] = useState(false);
+  const [data, setdata] = useState(false);
+
+  useEffect(() => {
+    connectmqtt();
+  }, []);
+
+  const connectmqtt = () => {
+    client.on('connect', () => {
+      client.subscribe('Snapler123');
+    });
+
+    client.on('message', (topic, message) => {
+      // let obj = JSON.parse(message.toString());
+      let obj = message.toString();
+      setdata(obj);
+      setisshow(true);
+      // console.log(obj);
+    });
+    return () => {
+      client.end();
+    };
+  };
+  const handleWaterON = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '2');
+  };
+  const handleWaterOff = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '3');
+  };
+  const handleFeedLineON = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '1');
+  };
+  const handleFeedLineOff = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '0');
+  };
+  const handleFeedON = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '4');
+  };
+  const handleFeedOff = () => {
+    console.log('published');
+    client.publish('ASoreterZ', '5');
+  };
+  return (
+    <View style={styles.container}>
+      <View style={styles.content}>
+        {/* {isshow === true ? (
+          <Text style={styles.contextText}>{data}</Text>
+        ) : (
+          <Text style={styles.contextText}>No Data</Text>
+        )} */}
+        {isshow === true ? (
+          <Text style={styles.contextText}>Current Temp : {data} C</Text>
+        ) : (
+          <Text style={styles.contextText}>Current Temp : Nan</Text>
+        )}
+        <View style={styles.CommandButtonContainer}>
+          <Pressable
+            style={styles.CommandButton}
+            onPress={() => {
+              handleWaterON();
+            }}>
+            <Text style={styles.CommandButtonText}>Turn Water Pump On</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.CommandButton, {backgroundColor: 'red'}]}
+            onPress={() => {
+              handleWaterOff();
+            }}>
+            <Text style={styles.CommandButtonText}>Turn Water Pump Off</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.contextText}>Feeding Line Start At : 7:55 AM</Text>
+        <View style={styles.CommandButtonContainer}>
+          <Pressable
+            style={styles.CommandButton}
+            onPress={() => {
+              handleFeedLineON();
+            }}>
+            <Text style={styles.CommandButtonText}>Turn Feeding Line On</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.CommandButton, {backgroundColor: 'red'}]}
+            onPress={() => {
+              handleFeedLineOff();
+            }}>
+            <Text style={styles.CommandButtonText}>Turn Feeding Line Off</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.contextText}>
+          Feeding System Active At : 8:00 AM
+        </Text>
+        <View style={styles.CommandButtonContainer}>
+          <Pressable
+            style={styles.CommandButton}
+            onPress={() => {
+              handleFeedON();
+            }}>
+            <Text style={styles.CommandButtonText}>Turn Feeding System On</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.CommandButton, {backgroundColor: 'red'}]}
+            onPress={() => {
+              handleFeedOff();
+            }}>
+            <Text style={styles.CommandButtonText}>
+              Turn Feeding System Off
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+// function FirstStallScreen({route, navigation}) {
+//   const {CTemp} = route.params;
+
+//   // const [alertMessage, setAlertMessage] = React.useState('');
+//   // const waterOnAlert = () => {
+//   //   setAlertMessage('Water Pump On');
+//   // };
+//   // const waterOffAlert = () => {
+//   //   setAlertMessage('Water Pump Off');
+//   // };
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.content}>
+//         <Text style={styles.contextText}>Current Temp : {CTemp}</Text>
+//         <View style={styles.CommandButtonContainer}>
+//           <Pressable
+//             style={styles.CommandButton}
+//             onPress={() => {
+//               setTimeout(() => {
+//                 Alert.alert('', 'Turning Water Pump On');
+//               }, -1000);
+//             }}>
+//             <Text style={styles.CommandButtonText}>Turn Water Pump On</Text>
+//           </Pressable>
+//           <Pressable
+//             style={[styles.CommandButton, {backgroundColor: 'red'}]}
+//             onPress={() => navigation.goBack()}>
+//             <Text style={styles.CommandButtonText}>Turn Water Pump Off</Text>
+//           </Pressable>
+//         </View>
+//         <Text style={styles.contextText}>Feeding Line Start At : {}</Text>
+//         <View style={styles.CommandButtonContainer}>
+//           <Pressable
+//             style={styles.CommandButton}
+//             onPress={() => navigation.goBack()}>
+//             <Text style={styles.CommandButtonText}>Turn Feeding Line On</Text>
+//           </Pressable>
+//           <Pressable
+//             style={[styles.CommandButton, {backgroundColor: 'red'}]}
+//             onPress={() => navigation.goBack()}>
+//             <Text style={styles.CommandButtonText}>Turn Feeding Line Off</Text>
+//           </Pressable>
+//         </View>
+//         <Text style={styles.contextText}>Feeding System Active At : {}</Text>
+//         <View style={styles.CommandButtonContainer}>
+//           <Pressable
+//             style={styles.CommandButton}
+//             onPress={() => navigation.goBack()}>
+//             <Text style={styles.CommandButtonText}>Turn Feeding System On</Text>
+//           </Pressable>
+//           <Pressable
+//             style={[styles.CommandButton, {backgroundColor: 'red'}]}
+//             onPress={() => navigation.goBack()}>
+//             <Text style={styles.CommandButtonText}>
+//               Turn Feeding System Off
+//             </Text>
+//           </Pressable>
+//         </View>
+//       </View>
+//       <Button title="Go back" onPress={() => navigation.goBack()} />
+//     </View>
+//   );
+// }
+
+const Stack = createNativeStackNavigator();
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -80,159 +279,4 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-
-function HomeScreen({navigation}) {
-  return (
-    <View style={styles.container}>
-      <View style={styles.buttonRow}>
-        <Pressable
-          style={styles.button}
-          onPress={() =>
-            navigation.navigate('First Stall', {
-              CTemp: Math.floor(Math.random() * 30 - 20) + 20 + ' °C',
-            })
-          }>
-          <Text style={styles.buttonText}>First Stall</Text>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={() =>
-            navigation.navigate('Second Stall', {
-              CTemp: Math.floor(Math.random() * 30 - 20) + 20 + ' °C',
-            })
-          }>
-          <Text style={styles.buttonText}>Second Stall</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
-function FirstStallScreen({route, navigation}) {
-  const {CTemp} = route.params;
-
-  // const [alertMessage, setAlertMessage] = React.useState('');
-  // const waterOnAlert = () => {
-  //   setAlertMessage('Water Pump On');
-  // };
-  // const waterOffAlert = () => {
-  //   setAlertMessage('Water Pump Off');
-  // };
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.contextText}>Current Temp : {CTemp}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => {
-              setTimeout(() => {
-                Alert.alert('', 'Turning Water Pump On');
-              }, -1000);
-            }}>
-            <Text style={styles.CommandButtonText}>Turn Water Pump On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Turn Water Pump Off</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.contextText}>Feeding Line Start At : {}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Turn Feeding Line On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Turn Feeding Line Off</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.contextText}>Feeding System Active At : {}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Turn Feeding System On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>
-              Turn Feeding System Off
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-}
-
-function SecondStallScreen({route, navigation}) {
-  const {CTemp} = route.params;
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.contextText}>Current Temp : {CTemp}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Water Pump On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Water Pump Off</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.contextText}>Feeding Line Start At : {}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Feeding Line On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Water Pump Off</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.contextText}>Feeding System Active At : {}</Text>
-        <View style={styles.CommandButtonContainer}>
-          <Pressable
-            style={styles.CommandButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Water Pump On</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.CommandButton, {backgroundColor: 'red'}]}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.CommandButtonText}>Water Pump Off</Text>
-          </Pressable>
-        </View>
-      </View>
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-}
-const Stack = createNativeStackNavigator();
-
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="First Stall" component={FirstStallScreen} />
-        <Stack.Screen name="Second Stall" component={SecondStallScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
-
 export default App;
