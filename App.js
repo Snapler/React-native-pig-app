@@ -5,7 +5,6 @@ import {Button, View, Text, Pressable, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StyleSheet} from 'react-native';
-// import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
 
 import mqtt from 'mqtt/dist/mqtt';
@@ -17,20 +16,20 @@ const createChannels = () => {
   });
 };
 
-// const handleNotification = () => {
-//   PushNotification.localNotification({
-//     channelId: 'test-channel',
-//     title: 'Notification Title You Clicked Button',
-//     message: 'Notification Message',
-//   });
-// };
-// const handlemqttnoti = () => {
-//   PushNotification.localNotification({
-//     channelId: 'test-channel',
-//     title: 'Pig Alert Detected',
-//     message: 'Pig Alert! Please Check Your Farm',
-//   });
-// };
+const handleNotification = () => {
+  PushNotification.localNotification({
+    channelId: 'test-channel',
+    title: 'Notification Title You Clicked Button',
+    message: 'Notification Message',
+  });
+};
+const handlemqttnoti = () => {
+  PushNotification.localNotification({
+    channelId: 'test-channel',
+    title: 'Pig Alert Detected',
+    message: 'Pig Alert! Please Check Your Farm',
+  });
+};
 function HomeScreen({route, navigation}) {
   const client = mqtt.connect('wss://broker.emqx.io/mqtt', {port: 8084});
 
@@ -74,8 +73,8 @@ function HomeScreen({route, navigation}) {
         PushNotification.localNotificationSchedule({
           channelId: 'test-channel',
           title: 'Pig Alert Detected',
-          message: 'Pig Alert! Please Check Your Farm',
-          date: new Date(Date.now() + 5),
+          message: 'Please Check Your Farm',
+          date: new Date(Date.now() + 5000),
         });
         setisshow(false);
       }
@@ -85,9 +84,6 @@ function HomeScreen({route, navigation}) {
       };
     });
   };
-  // PushNotification.localNotificationSchedule({
-  //   message: 'My Notification Message',
-  // });
   const handleWaterON = () => {
     console.log('published');
     client.publish('ASoreterZ', '2');
