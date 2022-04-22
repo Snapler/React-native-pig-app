@@ -109,6 +109,54 @@ function HomeScreen({route, navigation}) {
     client.publish('ASoreterZ', '5');
   };
 
+  const waterbuttonon = () => {
+    Alert.alert('Activating Water System', 'Water System is Turned On', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
+  const waterbuttonoff = () => {
+    Alert.alert('Deactivating Water System', 'Water System is Turned Off', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
+  const feedbuttonon = () => {
+    Alert.alert('Activating Feed System', 'Feed System is Turned On', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
+  const feedbuttonoff = () => {
+    Alert.alert('Deactivating Feed System', 'Feed System is Turned Off', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
+  const feedlinebuttonon = () => {
+    Alert.alert('Activating Feed Line', 'Feed Line is Turned On', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
+  const feedlinebuttonoff = () => {
+    Alert.alert('Deactivating Feed Line', 'Feed Line is Turned Off', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -128,6 +176,7 @@ function HomeScreen({route, navigation}) {
             style={styles.CommandButton}
             onPress={() => {
               handleWaterON();
+              waterbuttonon();
             }}>
             <Text style={styles.CommandButtonText}>Turn Water Pump On</Text>
           </Pressable>
@@ -135,6 +184,7 @@ function HomeScreen({route, navigation}) {
             style={[styles.CommandButton, {backgroundColor: 'red'}]}
             onPress={() => {
               handleWaterOff();
+              waterbuttonoff();
             }}>
             <Text style={styles.CommandButtonText}>Turn Water Pump Off</Text>
           </Pressable>
@@ -150,6 +200,7 @@ function HomeScreen({route, navigation}) {
             style={styles.CommandButton}
             onPress={() => {
               handleFeedLineON();
+              feedlinebuttonon();
             }}>
             <Text style={styles.CommandButtonText}>Turn Feeding Line On</Text>
           </Pressable>
@@ -157,6 +208,7 @@ function HomeScreen({route, navigation}) {
             style={[styles.CommandButton, {backgroundColor: 'red'}]}
             onPress={() => {
               handleFeedLineOff();
+              feedlinebuttonoff();
             }}>
             <Text style={styles.CommandButtonText}>Turn Feeding Line Off</Text>
           </Pressable>
@@ -169,6 +221,7 @@ function HomeScreen({route, navigation}) {
             style={styles.CommandButton}
             onPress={() => {
               handleFeedON();
+              feedbuttonon();
             }}>
             <Text style={styles.CommandButtonText}>Turn Feeding System On</Text>
           </Pressable>
@@ -176,6 +229,7 @@ function HomeScreen({route, navigation}) {
             style={[styles.CommandButton, {backgroundColor: 'red'}]}
             onPress={() => {
               handleFeedOff();
+              feedbuttonoff();
             }}>
             <Text style={styles.CommandButtonText}>
               Turn Feeding System Off
